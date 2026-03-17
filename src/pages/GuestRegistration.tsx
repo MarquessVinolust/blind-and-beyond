@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { addGuest, getGuestByEmail, getSession, activateSession } from "@/lib/tasting-store";
 import { TastingSession } from "@/types/tasting";
-import logo from "@/assets/wine-cellar-logo.png";
+import logo from "@/assets/BB-Logo.jpg";
 import { Wine } from "lucide-react";
 import { toast } from "sonner";
 
@@ -106,7 +106,7 @@ const GuestRegistration = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-4">
         <div className="text-center">
-          <img src={logo} alt="Wine Cellar" className="h-12 mx-auto mb-6" />
+          <img src={logo} alt="Brice & Burnett" className="h-5 mx-auto mb-6" />
           <h1 className="text-2xl font-bold mb-2">No Session Found</h1>
           <p className="text-muted-foreground">Please ask your host for the correct QR code or link.</p>
         </div>
@@ -122,7 +122,7 @@ const GuestRegistration = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center max-w-sm"
         >
-          <img src={logo} alt="Wine Cellar" className="h-12 mx-auto mb-6" />
+          <img src={logo} alt="Brice & Burnett" className="h-5 mx-auto mb-6" />
           <h1 className="text-2xl font-bold mb-2">This Tasting Has Ended</h1>
           <p className="text-muted-foreground">
             The host has closed this session. Thank you for joining!
@@ -142,7 +142,7 @@ const GuestRegistration = () => {
       >
         <div className="flex flex-col items-center mb-10">
           <button onClick={() => navigate("/")}>
-            <img src={logo} alt="Wine Cellar" className="h-14 mb-6" />
+            <img src={logo} alt="Brice & Burnett" className="h-5 mb-6" />
           </button>
           <h1 className="text-3xl font-bold text-foreground mb-1">
             Welcome to the Tasting
