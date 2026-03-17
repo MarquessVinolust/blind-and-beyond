@@ -28,14 +28,11 @@ const SummaryPage = () => {
   const { guestId } = useParams<{ guestId: string }>();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session");
-  const isConfirmMode = searchParams.get("confirm") === "true";
   const navigate = useNavigate();
 
   const [session, setSession] = useState<TastingSession | null>(null);
   const [guestRankings, setGuestRankings] = useState<GuestRankings | null>(null);
   const [loading, setLoading] = useState(true);
-  const [confirming, setConfirming] = useState(false);
-  const [confirmed, setConfirmed] = useState(!isConfirmMode);
 
   useEffect(() => {
     if (!sessionId || !guestId) return;
@@ -98,94 +95,6 @@ const SummaryPage = () => {
         if (flightGuesses.includes(wine.id) && wine.isInternational) totalCorrect++;
       }
     }
-  }
-
-  // ── CONFIRM SCREEN ──────────────────────────────────────────────────────────
-  const handleConfirm = async () => {
-    setConfirming(true);
-    try {
-      // Rankings already saved during tasting progress — this finalises them
-      const allRankingsList = Object.entries(flightResults).flatMap(([, results]) =>
-        results.map(({ wine, rank }) => ({ wineId: wine.id, rank }))
-      );
-      await saveGuestRankings(guestId, sessionId, allRankingsList, guesses);
-      setConfirmed(true);
-      toast.success("Results confirmed!");
-    } catch {
-      toast.error("Failed to confirm results. Please try again.");
-    } finally {
-      setConfirming(false);
-    }
-  };
-
-  if (!confirmed) {
-    return (
-      <div className="min-h-screen bg-background px-4 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-lg mx-auto"
-        >
-          <div className="flex flex-col items-center mb-8">
-            <button onClick={() => navigate("/")}>
-              <img src={logo} alt="Wine Cellar" className="h-10 mb-4" />
-            </button>
-            <h1 className="text-3xl font-bold text-foreground mb-1">Confirm Your Results</h1>
-            <p className="text-muted-foreground text-sm text-center">
-              Here are your #1 picks. Happy with your choices?
-            </p>
-          </div>
-
-          <div className="bg-card border border-gold/30 rounded-lg p-6 mb-6 shadow-md">
-            <div className="flex items-center gap-2 mb-4">
-              <Trophy className="h-5 w-5 text-gold" />
-              <h2 className="text-xl font-semibold">Your Top Picks</h2>
-            </div>
-            <div className="space-y-3">
-              {favourites.map((wine, i) => (
-                <motion.div
-                  key={wine.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  className="flex items-center gap-3 bg-muted/50 rounded-md p-3"
-                >
-                  <Star className="h-5 w-5 text-gold fill-gold shrink-0" />
-                  <div className="flex-1">
-                    <p className="font-semibold text-sm">Flight {i + 1} favourite</p>
-                    {isBlind ? (
-                      <p className="text-xs text-muted-foreground">Details revealed after confirming</p>
-                    ) : (
-                      <p className="text-xs text-gold">
-                        {wine.name} {wine.vintage && `· ${wine.vintage}`}
-                      </p>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <Button
-              onClick={handleConfirm}
-              disabled={confirming}
-              className="w-full bg-primary text-primary-foreground hover:opacity-90 text-base py-5"
-            >
-              <Trophy className="h-4 w-4 mr-2" />
-              {confirming ? "Confirming..." : "Yes, These Are My Results"}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate(`/tasting/${guestId}?session=${sessionId}`)}
-              className="w-full"
-            >
-              <ChevronLeft className="h-4 w-4 mr-2" /> Go Back and Change
-            </Button>
-          </div>
-        </motion.div>
-      </div>
-    );
   }
 
   // ── PDF DOWNLOAD ─────────────────────────────────────────────────────────────
