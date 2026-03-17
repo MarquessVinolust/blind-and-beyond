@@ -14,7 +14,7 @@ const Index = () => {
         <motion.img
           src={logo}
           alt="Brice & Burnett"
-          className="h-10"
+          className="h-7"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
