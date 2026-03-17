@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index";
 import HostSetup from "./pages/HostSetup";
 import HostDashboard from "./pages/HostDashboard";
+import GuestRegistration from "./pages/GuestRegistration";
 import TastingPage from "./pages/TastingPage";
 import SummaryPage from "./pages/SummaryPage";
 import OrderPage from "./pages/OrderPage";
@@ -22,7 +23,9 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/host" element={<HostDashboard />} />
+          <Route path="/host/:sessionId" element={<HostDashboard />} />
           <Route path="/host/setup" element={<HostSetup />} />
+          <Route path="/register" element={<GuestRegistration />} />
           <Route path="/tasting/:guestId" element={<TastingPage />} />
           <Route path="/summary/:guestId" element={<SummaryPage />} />
           <Route path="/order/:guestId" element={<OrderPage />} />
