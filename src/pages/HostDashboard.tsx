@@ -122,37 +122,67 @@ const SessionList = () => {
                   onClick={() => navigate(`/host/${session.id}`)}
                   className="w-full text-left bg-card border border-border rounded-lg p-5 shadow-sm hover:border-gold transition-colors pr-16"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h2 className="font-semibold text-foreground truncate">{session.name}</h2>
-                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${statusBadge(session.status)}`}>
-                          {session.status.charAt(0).toUpperCase() + session.status.slice(1)}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {new Date(session.date).toLocaleDateString("en-GB", {
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                          })}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          {session.tastingType === "blind"
-                            ? <><EyeOff className="h-3 w-3" /> Blind</>
-                            : <><Eye className="h-3 w-3" /> Open</>}
-                        </span>
-                      </div>
-                    </div>
-                    <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-                  </div>
+                  <div className="flex items-center justify-between gap-3">
+  <div className="flex-1 min-w-0">
+    <div className="flex items-center gap-2 mb-1">
+      <h2 className="font-semibold text-foreground truncate">{session.name}</h2>
+      <span className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${statusBadge(session.status)}`}>
+        {session.status.charAt(0).toUpperCase() + session.status.slice(1)}
+      </span>
+    </div>
+    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+      <span className="flex items-center gap-1">
+        <Calendar className="h-3 w-3" />
+        {new Date(session.date).toLocaleDateString("en-GB", {
+          day: "numeric", month: "long", year: "numeric",
+        })}
+      </span>
+      <span className="flex items-center gap-1">
+        {session.tastingType === "blind"
+          ? <><EyeOff className="h-3 w-3" /> Blind</>
+          : <><Eye className="h-3 w-3" /> Open</>}
+      </span>
+    </div>
+  </div>
+  <div className="flex items-center gap-2 shrink-0">
+    {session.status === "ended" && (
+      confirmDeleteId === session.id ? (
+        <div className="flex items-center gap-2 bg-card border border-destructive/30 rounded-lg px-3 py-1.5 shadow-md">
+          <span className="text-xs text-destructive">Delete?</span>
+          <button
+            onClick={() => handleDelete(session.id)}
+            disabled={deleting}
+            className="text-xs text-destructive font-semibold hover:opacity-70"
+          >
+            Yes
+          </button>
+          <button
+            onClick={() => setConfirmDeleteId(null)}
+            className="text-xs text-muted-foreground hover:opacity-70"
+          >
+            No
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={e => {
+            e.stopPropagation();
+            setConfirmDeleteId(session.id);
+          }}
+          className="p-1.5 rounded-md text-muted-foreground hover:text-destructive transition-colors"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+      )
+    )}
+    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+  </div>
+</div>
                 </button>
 
                 {/* Delete button — ended sessions only */}
                 {session.status === "ended" && (
-                  <div className="absolute top-1/2 -translate-y-1/2 right-10">
+                  <div className="absolute top-1/2 -translate-y-1/2 right-8">
                     {confirmDeleteId === session.id ? (
                       <div className="flex items-center gap-2 bg-card border border-destructive/30 rounded-lg px-3 py-1.5 shadow-md">
                         <span className="text-xs text-destructive">Delete?</span>
