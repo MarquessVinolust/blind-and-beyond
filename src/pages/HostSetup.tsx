@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { createSession, clearSession } from "@/lib/tasting-store";
+import { createSession } from "@/lib/tasting-store";
 import { Wine, TastingType, OriginFormat } from "@/types/tasting";
 import logo from "@/assets/wine-cellar-logo.png";
 import { Upload, Plus, Trash2, PlayCircle, Download, Globe, Eye, EyeOff } from "lucide-react";
@@ -19,10 +19,14 @@ const HostSetup = () => {
   const [step, setStep] = useState<"type" | "config">("type");
   const [tastingType, setTastingType] = useState<TastingType>("blind");
   const [originFormat, setOriginFormat] = useState<OriginFormat>("local_only");
+  const [sessionName, setSessionName] = useState("");
+  const [sessionDate, setSessionDate] = useState("");
+  const [hostEmail, setHostEmail] = useState("");
   const [wines, setWines] = useState<WineEntry[]>([]);
   const [flights, setFlights] = useState(1);
   const [winesPerFlight, setWinesPerFlight] = useState(4);
   const [manualEntry, setManualEntry] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isBlindInternational = tastingType === "blind" && originFormat === "international_mix";
 
@@ -106,24 +110,54 @@ const HostSetup = () => {
     setWines(wines.filter((_, i) => i !== index));
   };
 
-  const startTasting = () => {
+  const startTasting = async () => {
+    if (!sessionName.trim()) {
+      toast.error("Please enter a session name.");
+      return;
+    }
+    if (!sessionDate) {
+      toast.error("Please select a date for the tasting.");
+      return;
+    }
+    if (!hostEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(hostEmail)) {
+      toast.error("Please enter a valid host email address.");
+      return;
+    }
     if (wines.length === 0 || wines.some(w => !w.name)) {
       toast.error("Please add at least one wine with a name.");
       return;
     }
 
-    clearSession();
+    setIsSubmitting(true);
 
-    const assignedWines: Wine[] = wines.map((w, i) => ({
-      ...w,
-      id: crypto.randomUUID(),
-      flight: Math.floor(i / winesPerFlight) + 1,
-    }));
+    try {
+      const assignedWines: Wine[] = wines.map((w, i) => ({
+        ...w,
+        id: crypto.randomUUID(),
+        flight: Math.floor(i / winesPerFlight) + 1,
+      }));
 
-    const totalFlights = Math.max(flights, Math.ceil(wines.length / winesPerFlight));
-    createSession(assignedWines, totalFlights, winesPerFlight, tastingType, originFormat);
-    toast.success("Tasting session created!");
-    navigate("/");
+      const totalFlights = Math.max(flights, Math.ceil(wines.length / winesPerFlight));
+
+      const session = await createSession(
+        sessionName.trim(),
+        sessionDate,
+        hostEmail.trim(),
+        assignedWines,
+        totalFlights,
+        winesPerFlight,
+        tastingType,
+        originFormat
+      );
+
+      toast.success("Tasting session created!");
+      navigate(`/host/${session.id}`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to create session. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const recalcFlights = (wpf: number) => {
@@ -142,7 +176,9 @@ const HostSetup = () => {
           className="max-w-xl mx-auto"
         >
           <div className="flex flex-col items-center mb-10">
-            <img src={logo} alt="Wine Cellar" className="h-14 mb-6" />
+            <button onClick={() => navigate("/")} className="mb-6">
+              <img src={logo} alt="Wine Cellar" className="h-14" />
+            </button>
             <h1 className="text-3xl font-bold text-foreground">Set Up Your Tasting</h1>
             <p className="text-muted-foreground text-center mt-1">Choose how your guests will experience the wines</p>
           </div>
@@ -161,7 +197,7 @@ const HostSetup = () => {
                 <div>
                   <h2 className="text-xl font-semibold text-foreground">Blind Tasting</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Wine identities are hidden. Guests rank wines and reveal them after each flight. Add an international guessing challenge for extra fun.
+                    Wine identities are hidden. Guests rank wines and reveal them after each flight.
                   </p>
                 </div>
               </div>
@@ -180,14 +216,13 @@ const HostSetup = () => {
                 <div>
                   <h2 className="text-xl font-semibold text-foreground">Open Tasting</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Wine details are visible throughout. Guests simply rank their favourites per flight — no reveals needed.
+                    Wine details are visible throughout. Guests simply rank their favourites per flight.
                   </p>
                 </div>
               </div>
             </button>
           </div>
 
-          {/* Blind tasting origin option */}
           <AnimatePresence>
             {tastingType === "blind" && (
               <motion.div
@@ -199,7 +234,6 @@ const HostSetup = () => {
                 <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
                   <h3 className="text-lg font-semibold mb-1">Wine Origin Format</h3>
                   <p className="text-sm text-muted-foreground mb-4">Will guests guess which wines are international?</p>
-
                   <div className="space-y-3">
                     <button
                       onClick={() => setOriginFormat("international_mix")}
@@ -215,7 +249,6 @@ const HostSetup = () => {
                         </div>
                       </div>
                     </button>
-
                     <button
                       onClick={() => setOriginFormat("local_only")}
                       className={`w-full text-left border rounded-lg p-4 transition-all ${
@@ -259,7 +292,9 @@ const HostSetup = () => {
         className="max-w-2xl mx-auto"
       >
         <div className="flex flex-col items-center mb-8">
-          <img src={logo} alt="Wine Cellar" className="h-12 mb-4" />
+          <button onClick={() => navigate("/")} className="mb-4">
+            <img src={logo} alt="Wine Cellar" className="h-12" />
+          </button>
           <h1 className="text-3xl font-bold text-foreground">Host Setup</h1>
           <div className="flex items-center gap-2 mt-1">
             <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
@@ -276,7 +311,43 @@ const HostSetup = () => {
           </div>
         </div>
 
-        {/* Upload Section */}
+        {/* Session Details */}
+        <div className="bg-card rounded-lg p-6 shadow-md border border-border mb-6">
+          <h2 className="text-xl font-semibold mb-4">Session Details</h2>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="sessionName">Session Name</Label>
+              <Input
+                id="sessionName"
+                value={sessionName}
+                onChange={(e) => setSessionName(e.target.value)}
+                placeholder="e.g. The Njoroge Family Tasting"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="sessionDate">Date of Tasting</Label>
+              <Input
+                id="sessionDate"
+                type="date"
+                value={sessionDate}
+                onChange={(e) => setSessionDate(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="hostEmail">Host Email Address</Label>
+              <Input
+                id="hostEmail"
+                type="email"
+                value={hostEmail}
+                onChange={(e) => setHostEmail(e.target.value)}
+                placeholder="orders@yourwinehouse.com"
+              />
+              <p className="text-xs text-muted-foreground">Orders from tasters will be sent to this address</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Wine List */}
         <div className="bg-card rounded-lg p-6 shadow-md border border-border mb-6">
           <h2 className="text-xl font-semibold mb-2">Wine List</h2>
           <p className="text-sm text-muted-foreground mb-4">
@@ -315,7 +386,6 @@ const HostSetup = () => {
             </Button>
           </div>
 
-          {/* Wine List */}
           {wines.length > 0 && (
             <div className="space-y-3 mt-4">
               {wines.map((wine, i) => (
@@ -377,11 +447,22 @@ const HostSetup = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Wines Per Flight</Label>
-              <Input type="number" min={1} max={10} value={winesPerFlight} onChange={(e) => recalcFlights(parseInt(e.target.value) || 4)} />
+              <Input
+                type="number"
+                min={1}
+                max={10}
+                value={winesPerFlight}
+                onChange={(e) => recalcFlights(parseInt(e.target.value) || 4)}
+              />
             </div>
             <div className="space-y-2">
               <Label>Total Flights</Label>
-              <Input type="number" min={1} value={flights} onChange={(e) => setFlights(parseInt(e.target.value) || 1)} />
+              <Input
+                type="number"
+                min={1}
+                value={flights}
+                onChange={(e) => setFlights(parseInt(e.target.value) || 1)}
+              />
             </div>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
@@ -396,11 +477,11 @@ const HostSetup = () => {
 
         <Button
           onClick={startTasting}
-          disabled={wines.length === 0}
+          disabled={wines.length === 0 || isSubmitting}
           className="w-full bg-primary text-primary-foreground hover:opacity-90 text-lg py-6"
         >
           <PlayCircle className="mr-2 h-5 w-5" />
-          Start {tastingType === "blind" ? "Blind" : "Open"} Tasting
+          {isSubmitting ? "Creating Session..." : `Save ${tastingType === "blind" ? "Blind" : "Open"} Tasting`}
         </Button>
       </motion.div>
     </div>
