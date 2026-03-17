@@ -159,26 +159,13 @@ const TastingPage = () => {
     setRevealedFlights([...revealedFlights, currentFlight]);
   };
 
-  const goToConfirm = async () => {
-  // Check all flights have been ranked
-  const allFlightsRanked = Array.from({ length: totalFlights }, (_, i) => i + 1).every(f => {
-    const flightW = session.wines.filter(w => w.flight === f);
-    const flightR = rankings[f] || {};
-    return Object.keys(flightR).length === flightW.length;
-  });
-
-  if (!allFlightsRanked) {
-    toast.error("Please complete all flights before confirming.");
-    return;
-  }
-
+  const goToResults = async () => {
   try {
-    // Save rankings to Supabase before navigating
     const allRankingsList = Object.entries(rankings).flatMap(([, flightRanks]) =>
       Object.entries(flightRanks).map(([wineId, rank]) => ({ wineId, rank: rank as number }))
     );
     await saveGuestRankings(guestId, sessionId, allRankingsList, guesses);
-    navigate(`/summary/${guestId}?session=${sessionId}&confirm=true`);
+    navigate(`/summary/${guestId}?session=${sessionId}`);
   } catch (err) {
     console.error(err);
     toast.error("Failed to save results. Please try again.");
@@ -455,7 +442,7 @@ const TastingPage = () => {
               </Button>
             ) : isLastFlight ? (
               <Button
-                onClick={goToConfirm}
+                onClick={goToResults}
                 className="flex-1 bg-primary text-primary-foreground hover:opacity-90"
               >
                 <Trophy className="h-4 w-4 mr-2" /> Confirm My Results
@@ -470,7 +457,7 @@ const TastingPage = () => {
             )
           ) : isLastFlight ? (
             <Button
-              onClick={goToConfirm}
+              onClick={goToResults}
               disabled={!allRanked}
               className="flex-1 bg-primary text-primary-foreground hover:opacity-90"
             >
