@@ -9,6 +9,7 @@ import { TastingSession, GuestRankings, OrderItem } from "@/types/tasting";
 import logo from "@/assets/wine-cellar-logo.png";
 import { Star, Minus, Plus, ArrowLeft, ShoppingCart, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
 
 const parsePrice = (price: string): number => {
   const cleaned = price.replace(/[^0-9.]/g, "");
