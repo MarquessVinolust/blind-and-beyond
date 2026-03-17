@@ -1,17 +1,37 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { getSession, saveGuestRankings, saveGuestProgress, getGuestProgress } from "@/lib/tasting-store";
+import {
+  getSession,
+  saveGuestProgress,
+  getGuestProgress,
+  saveGuestRankings,
+  updateGuestStatus,
+} from "@/lib/tasting-store";
+import { TastingSession } from "@/types/tasting";
 import logo from "@/assets/wine-cellar-logo.png";
-import { ChevronRight, ChevronLeft, Trophy, Check, Globe, Eye, CheckCircle2, XCircle } from "lucide-react";
+import {
+  ChevronRight,
+  ChevronLeft,
+  Trophy,
+  Check,
+  Globe,
+  Eye,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
+import { toast } from "sonner";
 
 const TastingPage = () => {
   const { guestId } = useParams<{ guestId: string }>();
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get("session");
   const navigate = useNavigate();
-  const session = getSession();
 
+  const [session, setSession] = useState<TastingSession | null>(null);
+  const [loading, setLoading] = useState(true);
   const [currentFlight, setCurrentFlight] = useState(1);
   const [rankings, setRankings] = useState<Record<number, Record<string, number>>>({});
   const [guesses, setGuesses] = useState<Record<number, string[]>>({});
@@ -21,27 +41,75 @@ const TastingPage = () => {
   const isBlind = session?.tastingType === "blind";
   const isInternationalMix = session?.originFormat === "international_mix";
 
+  // Load session + restore progress
   useEffect(() => {
-    if (!guestId || !session) return;
-    const saved = getGuestProgress(guestId);
-    if (saved) {
-      setCurrentFlight(saved.currentFlight);
-      setRankings(saved.rankings);
-      setGuesses(saved.guesses || {});
-      setRevealedFlights(saved.revealedFlights || []);
-    }
-    setInitialized(true);
-  }, []);
+    if (!sessionId || !guestId) return;
 
+    const init = async () => {
+      const s = await getSession(sessionId);
+      if (!s) { setLoading(false); return; }
+      setSession(s);
+
+      const saved = await getGuestProgress(guestId);
+      if (saved) {
+        setCurrentFlight(saved.currentFlight);
+        setRankings(saved.rankings);
+        setGuesses(saved.guesses || {});
+        setRevealedFlights(saved.revealedFlights || []);
+      }
+
+      setInitialized(true);
+      setLoading(false);
+    };
+
+    init();
+  }, [sessionId, guestId]);
+
+  // Auto-save progress
   useEffect(() => {
-    if (!guestId || !initialized) return;
-    saveGuestProgress(guestId, { currentFlight, rankings, guesses, revealedFlights });
-  }, [currentFlight, rankings, guesses, revealedFlights, guestId, initialized]);
+    if (!guestId || !sessionId || !initialized) return;
+    saveGuestProgress(guestId, sessionId, {
+      currentFlight,
+      rankings,
+      guesses,
+      revealedFlights,
+    });
+    updateGuestStatus(guestId, "in_progress");
+  }, [currentFlight, rankings, guesses, revealedFlights, initialized]);
 
-  if (!session || !guestId) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <p className="text-muted-foreground">No session found. Please ask your host to set up a tasting.</p>
+        <p className="text-muted-foreground">Loading your tasting...</p>
+      </div>
+    );
+  }
+
+  if (!session || !guestId || !sessionId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <div className="text-center">
+          <img src={logo} alt="Wine Cellar" className="h-12 mx-auto mb-4" />
+          <p className="text-muted-foreground">No session found. Please ask your host for the correct link.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (session.status === "ended") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center max-w-sm"
+        >
+          <img src={logo} alt="Wine Cellar" className="h-12 mx-auto mb-6" />
+          <h1 className="text-2xl font-bold mb-2">This Tasting Has Ended</h1>
+          <p className="text-muted-foreground">
+            The host has closed this session. Thank you for joining!
+          </p>
+        </motion.div>
       </div>
     );
   }
@@ -51,15 +119,12 @@ const TastingPage = () => {
   const flightRankings = rankings[currentFlight] || {};
   const flightGuesses = guesses[currentFlight] || [];
   const isRevealed = revealedFlights.includes(currentFlight);
-
   const assignedRanks = new Set(Object.values(flightRankings));
   const allRanked = Object.keys(flightRankings).length === flightWines.length;
   const hasInternationalWines = isInternationalMix && flightWines.some(w => w.isInternational);
-
-  // For blind: need ranking + guesses (if international) before reveal
-  // For open: just need ranking to proceed
   const readyToReveal = allRanked && (flightGuesses.length > 0 || !hasInternationalWines);
   const canProceed = isBlind ? isRevealed : allRanked;
+  const isLastFlight = currentFlight === totalFlights;
 
   const handleTapRank = (wineId: string, rank: number) => {
     if (isBlind && isRevealed) return;
@@ -94,26 +159,37 @@ const TastingPage = () => {
     setRevealedFlights([...revealedFlights, currentFlight]);
   };
 
-  const finishTasting = () => {
-    const allRankingsList = Object.entries(rankings).flatMap(([, flightRanks]) =>
-      Object.entries(flightRanks).map(([wineId, rank]) => ({ wineId, rank }))
-    );
-    saveGuestRankings(guestId, allRankingsList, guesses);
-    navigate(`/summary/${guestId}`);
-  };
+  const goToConfirm = () => {
+    // Check all flights have been ranked
+    const allFlightsRanked = Array.from({ length: totalFlights }, (_, i) => i + 1).every(f => {
+      const flightW = session.wines.filter(w => w.flight === f);
+      const flightR = rankings[f] || {};
+      return Object.keys(flightR).length === flightW.length;
+    });
 
-  const isLastFlight = currentFlight === totalFlights;
+    if (!allFlightsRanked) {
+      toast.error("Please complete all flights before confirming.");
+      return;
+    }
+
+    navigate(`/summary/${guestId}?session=${sessionId}&confirm=true`);
+  };
 
   return (
     <div className="min-h-screen bg-background px-4 py-6">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-lg mx-auto">
+
+        {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <img src={logo} alt="Wine Cellar" className="h-10" />
+          <button onClick={() => navigate("/")}>
+            <img src={logo} alt="Wine Cellar" className="h-10" />
+          </button>
           <span className="text-sm text-gold font-medium">
             Flight {currentFlight} of {totalFlights}
           </span>
         </div>
 
+        {/* Title */}
         {isBlind && !isRevealed ? (
           <>
             <h1 className="text-2xl font-bold mb-2">Blind Tasting</h1>
@@ -125,7 +201,9 @@ const TastingPage = () => {
         ) : isBlind && isRevealed ? (
           <>
             <h1 className="text-2xl font-bold mb-2">Flight {currentFlight} Revealed!</h1>
-            <p className="text-muted-foreground text-sm mb-6">See the full details and how you did.</p>
+            <p className="text-muted-foreground text-sm mb-6">
+              See the full details and how you did.
+            </p>
           </>
         ) : (
           <>
@@ -143,13 +221,20 @@ const TastingPage = () => {
               key={i}
               className={`h-1.5 flex-1 rounded-full transition-colors ${
                 isBlind
-                  ? revealedFlights.includes(i + 1) ? "bg-gold" : i + 1 <= currentFlight ? "bg-gold/40" : "bg-muted"
-                  : i + 1 <= currentFlight ? "bg-gold" : "bg-muted"
+                  ? revealedFlights.includes(i + 1)
+                    ? "bg-gold"
+                    : i + 1 <= currentFlight
+                    ? "bg-gold/40"
+                    : "bg-muted"
+                  : i + 1 <= currentFlight
+                  ? "bg-gold"
+                  : "bg-muted"
               }`}
             />
           ))}
         </div>
 
+        {/* Wine Cards */}
         <AnimatePresence mode="wait">
           <motion.div
             key={`${currentFlight}-${isRevealed}`}
@@ -164,7 +249,7 @@ const TastingPage = () => {
               const isGuessedInternational = flightGuesses.includes(wine.id);
               const actuallyInternational = wine.isInternational;
 
-              // === REVEALED STATE (blind only) ===
+              // ── REVEALED STATE ──
               if (isBlind && isRevealed) {
                 const guessedCorrectly = isGuessedInternational === !!actuallyInternational;
                 return (
@@ -186,9 +271,10 @@ const TastingPage = () => {
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-foreground">{wine.name}</p>
                         <p className="text-xs text-gold">
-                          {wine.vintage && `${wine.vintage} · `}{wine.region}{wine.country && ` · ${wine.country}`}
+                          {wine.vintage && `${wine.vintage} · `}
+                          {wine.region}
+                          {wine.country && ` · ${wine.country}`}
                         </p>
-                        {wine.price && <p className="text-xs text-muted-foreground mt-1">{wine.price}</p>}
                       </div>
                       {actuallyInternational && (
                         <span className="flex items-center gap-1 text-xs font-medium text-gold bg-gold/10 px-2 py-1 rounded-full shrink-0">
@@ -197,19 +283,23 @@ const TastingPage = () => {
                       )}
                     </div>
                     {hasInternationalWines && (
-                      <div className="mt-2 ml-13 flex items-center gap-1.5 text-xs">
+                      <div className="mt-2 flex items-center gap-1.5 text-xs ml-13">
                         {isGuessedInternational ? (
                           guessedCorrectly ? (
-                            <span className="flex items-center gap-1 text-sage"><CheckCircle2 className="h-3.5 w-3.5" /> Correct guess!</span>
+                            <span className="flex items-center gap-1 text-sage">
+                              <CheckCircle2 className="h-3.5 w-3.5" /> Correct guess!
+                            </span>
                           ) : (
-                            <span className="flex items-center gap-1 text-destructive"><XCircle className="h-3.5 w-3.5" /> Wrong guess</span>
+                            <span className="flex items-center gap-1 text-destructive">
+                              <XCircle className="h-3.5 w-3.5" /> Wrong guess
+                            </span>
                           )
+                        ) : !actuallyInternational ? (
+                          <span className="text-muted-foreground">Not guessed — correct</span>
                         ) : (
-                          !actuallyInternational ? (
-                            <span className="text-muted-foreground">Not guessed — correct</span>
-                          ) : (
-                            <span className="flex items-center gap-1 text-destructive"><XCircle className="h-3.5 w-3.5" /> Missed this one</span>
-                          )
+                          <span className="flex items-center gap-1 text-destructive">
+                            <XCircle className="h-3.5 w-3.5" /> Missed this one
+                          </span>
                         )}
                       </div>
                     )}
@@ -217,7 +307,7 @@ const TastingPage = () => {
                 );
               }
 
-              // === OPEN TASTING or PRE-REVEAL BLIND ===
+              // ── OPEN OR PRE-REVEAL BLIND ──
               const showWineDetails = !isBlind;
 
               return (
@@ -241,19 +331,24 @@ const TastingPage = () => {
                         <span className="text-xs text-muted-foreground">?</span>
                       </div>
                     )}
-
                     <div className="flex-1 min-w-0">
                       {showWineDetails ? (
                         <>
                           <p className="font-semibold text-foreground">{wine.name}</p>
                           <p className="text-xs text-gold">
-                            {wine.vintage && `${wine.vintage} · `}{wine.region}{wine.country && ` · ${wine.country}`}
+                            {wine.vintage && `${wine.vintage} · `}
+                            {wine.region}
+                            {wine.country && ` · ${wine.country}`}
                           </p>
                         </>
                       ) : (
                         <>
-                          <p className="font-semibold text-foreground">Wine {flightWines.indexOf(wine) + 1}</p>
-                          <p className="text-xs text-muted-foreground">Blind tasting — details hidden</p>
+                          <p className="font-semibold text-foreground">
+                            Wine {flightWines.indexOf(wine) + 1}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Blind tasting — details hidden
+                          </p>
                         </>
                       )}
                     </div>
@@ -283,7 +378,7 @@ const TastingPage = () => {
                     </div>
                   )}
 
-                  {/* International guess (blind + international only) */}
+                  {/* International guess */}
                   {isBlind && allRanked && hasInternationalWines && !isRevealed && (
                     <div className="mt-3 ml-13">
                       <label className="flex items-center gap-2 cursor-pointer">
@@ -303,16 +398,26 @@ const TastingPage = () => {
           </motion.div>
         </AnimatePresence>
 
-        {/* Status */}
+        {/* Status messages */}
         {allRanked && isBlind && !isRevealed && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 justify-center text-sm text-gold mt-4">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-2 justify-center text-sm text-gold mt-4"
+          >
             <Check className="h-4 w-4" />
-            {hasInternationalWines && flightGuesses.length === 0 ? "Now guess which wine(s) are international!" : "All set for this flight!"}
+            {hasInternationalWines && flightGuesses.length === 0
+              ? "Now guess which wine(s) are international!"
+              : "All set — ready to reveal!"}
           </motion.div>
         )}
 
         {!isBlind && allRanked && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 justify-center text-sm text-gold mt-4">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-2 justify-center text-sm text-gold mt-4"
+          >
             <Check className="h-4 w-4" /> All wines ranked for this flight!
           </motion.div>
         )}
@@ -320,37 +425,55 @@ const TastingPage = () => {
         {/* Navigation */}
         <div className="flex gap-3 mt-8">
           {currentFlight > 1 && (
-            <Button variant="outline" onClick={() => setCurrentFlight(currentFlight - 1)} className="flex-1">
+            <Button
+              variant="outline"
+              onClick={() => setCurrentFlight(currentFlight - 1)}
+              className="flex-1"
+            >
               <ChevronLeft className="h-4 w-4 mr-1" /> Previous
             </Button>
           )}
 
           {isBlind ? (
-            // Blind flow: Rank → Reveal → Next/Finish
             !isRevealed ? (
-              <Button onClick={revealFlight} disabled={!readyToReveal} className="flex-1 bg-gold text-gold-foreground hover:opacity-90">
+              <Button
+                onClick={revealFlight}
+                disabled={!readyToReveal}
+                className="flex-1 bg-gold text-gold-foreground hover:opacity-90"
+              >
                 <Eye className="h-4 w-4 mr-2" /> Reveal Flight
               </Button>
             ) : isLastFlight ? (
-              <Button onClick={finishTasting} className="flex-1 bg-primary text-primary-foreground hover:opacity-90">
-                <Trophy className="h-4 w-4 mr-2" /> See My Results
+              <Button
+                onClick={goToConfirm}
+                className="flex-1 bg-primary text-primary-foreground hover:opacity-90"
+              >
+                <Trophy className="h-4 w-4 mr-2" /> Confirm My Results
               </Button>
             ) : (
-              <Button onClick={() => setCurrentFlight(currentFlight + 1)} className="flex-1 bg-gold text-gold-foreground hover:opacity-90">
+              <Button
+                onClick={() => setCurrentFlight(currentFlight + 1)}
+                className="flex-1 bg-gold text-gold-foreground hover:opacity-90"
+              >
                 Next Flight <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             )
+          ) : isLastFlight ? (
+            <Button
+              onClick={goToConfirm}
+              disabled={!allRanked}
+              className="flex-1 bg-primary text-primary-foreground hover:opacity-90"
+            >
+              <Trophy className="h-4 w-4 mr-2" /> Confirm My Results
+            </Button>
           ) : (
-            // Open flow: Rank → Next/Finish
-            isLastFlight ? (
-              <Button onClick={finishTasting} disabled={!allRanked} className="flex-1 bg-primary text-primary-foreground hover:opacity-90">
-                <Trophy className="h-4 w-4 mr-2" /> See My Results
-              </Button>
-            ) : (
-              <Button onClick={() => setCurrentFlight(currentFlight + 1)} disabled={!allRanked} className="flex-1 bg-gold text-gold-foreground hover:opacity-90">
-                Next Flight <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
-            )
+            <Button
+              onClick={() => setCurrentFlight(currentFlight + 1)}
+              disabled={!allRanked}
+              className="flex-1 bg-gold text-gold-foreground hover:opacity-90"
+            >
+              Next Flight <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
           )}
         </div>
       </motion.div>
