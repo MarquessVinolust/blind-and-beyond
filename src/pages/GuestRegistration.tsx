@@ -31,6 +31,13 @@ const GuestRegistration = () => {
       setLoading(false);
       return;
     }
+    // Check if this taster already registered for this session
+  const savedGuest = localStorage.getItem(`guest_${sessionId}`);
+  if (savedGuest) {
+    const { guestId } = JSON.parse(savedGuest);
+    navigate(`/tasting/${guestId}?session=${sessionId}`);
+    return;
+  }
     getSession(sessionId).then(s => {
       setSession(s);
       setLoading(false);
@@ -65,6 +72,7 @@ const GuestRegistration = () => {
       const existing = await getGuestByEmail(sessionId!, email.trim());
       if (existing) {
         toast.info("Welcome back! Resuming your tasting.");
+        localStorage.setItem(`guest_${sessionId}`, JSON.stringify({ guestId: existing.id }));
         navigate(`/tasting/${existing.id}?session=${sessionId}`);
         return;
       }
@@ -76,7 +84,7 @@ const GuestRegistration = () => {
         phone: phone.trim(),
         consent,
       });
-
+      localStorage.setItem(`guest_${sessionId}`, JSON.stringify({ guestId: guest.id }));
       navigate(`/tasting/${guest.id}?session=${sessionId}`);
     } catch (err) {
       console.error(err);
@@ -222,15 +230,7 @@ const GuestRegistration = () => {
           </Button>
         </form>
 
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          Are you the host?{" "}
-          <button
-            onClick={() => navigate("/host")}
-            className="text-gold underline"
-          >
-            Go to Host Dashboard
-          </button>
-        </p>
+        
       </motion.div>
     </div>
   );
