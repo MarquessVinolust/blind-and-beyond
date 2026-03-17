@@ -2,10 +2,31 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { getSession, getAllSessions, getAllRankings, getAllOrders, endSession, activateSession, deleteSession } from "@/lib/tasting-store";
+import {
+  getSession,
+  getAllSessions,
+  getAllRankings,
+  getAllOrders,
+  endSession,
+  activateSession,
+  deleteSession,
+} from "@/lib/tasting-store";
 import { TastingSession, GuestStatus } from "@/types/tasting";
-import logo from "@/assets/wine-cellar-logo.png";
-import { Users, Trophy, QrCode, EyeOff, Eye, Plus, Download, StopCircle, ChevronRight, Calendar, Mail, Trash2 } from "lucide-react";
+import logo from "@/assets/BB-Logo.jpg";
+import {
+  Users,
+  Trophy,
+  QrCode,
+  EyeOff,
+  Eye,
+  Plus,
+  Download,
+  StopCircle,
+  ChevronRight,
+  Calendar,
+  Mail,
+  Trash2,
+} from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "@/lib/supabase";
 import * as XLSX from "xlsx";
@@ -25,14 +46,14 @@ const statusLabel: Record<GuestStatus, string> = {
   ordered: "Ordered",
 };
 
-// ─── SESSION LIST VIEW ───────────────────────────────────────────────────────
+// ─── SESSION LIST ────────────────────────────────────────────────────────────
 
 const SessionList = () => {
   const navigate = useNavigate();
   const [sessions, setSessions] = useState<TastingSession[]>([]);
-const [loading, setLoading] = useState(true);
-const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-const [deleting, setDeleting] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     getAllSessions().then(s => {
@@ -42,18 +63,18 @@ const [deleting, setDeleting] = useState(false);
   }, []);
 
   const handleDelete = async (id: string) => {
-  setDeleting(true);
-  try {
-    await deleteSession(id);
-    setSessions(prev => prev.filter(s => s.id !== id));
-    setConfirmDeleteId(null);
-    toast.success("Session deleted.");
-  } catch {
-    toast.error("Failed to delete session.");
-  } finally {
-    setDeleting(false);
-  }
-};
+    setDeleting(true);
+    try {
+      await deleteSession(id);
+      setSessions(prev => prev.filter(s => s.id !== id));
+      setConfirmDeleteId(null);
+      toast.success("Session deleted.");
+    } catch {
+      toast.error("Failed to delete session.");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const statusBadge = (status: string) => {
     const map: Record<string, string> = {
@@ -96,69 +117,74 @@ const [deleting, setDeleting] = useState(false);
         ) : (
           <div className="space-y-3">
             {sessions.map(session => (
-  <div key={session.id} className="relative">
-    <button
-      onClick={() => navigate(`/host/${session.id}`)}
-      className="w-full text-left bg-card border border-border rounded-lg p-5 shadow-sm hover:border-gold transition-colors"
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <h2 className="font-semibold text-foreground truncate">{session.name}</h2>
-            <span className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${statusBadge(session.status)}`}>
-              {session.status.charAt(0).toUpperCase() + session.status.slice(1)}
-            </span>
-          </div>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <Calendar className="h-3 w-3" />
-              {new Date(session.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
-            </span>
-            <span className="flex items-center gap-1">
-              {session.tastingType === "blind"
-                ? <><EyeOff className="h-3 w-3" /> Blind</>
-                : <><Eye className="h-3 w-3" /> Open</>}
-            </span>
-          </div>
-        </div>
-        <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-      </div>
-    </button>
+              <div key={session.id} className="relative">
+                <button
+                  onClick={() => navigate(`/host/${session.id}`)}
+                  className="w-full text-left bg-card border border-border rounded-lg p-5 shadow-sm hover:border-gold transition-colors pr-16"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h2 className="font-semibold text-foreground truncate">{session.name}</h2>
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${statusBadge(session.status)}`}>
+                          {session.status.charAt(0).toUpperCase() + session.status.slice(1)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {new Date(session.date).toLocaleDateString("en-GB", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          })}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          {session.tastingType === "blind"
+                            ? <><EyeOff className="h-3 w-3" /> Blind</>
+                            : <><Eye className="h-3 w-3" /> Open</>}
+                        </span>
+                      </div>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+                  </div>
+                </button>
 
-    {session.status === "ended" && (
-      <div className="absolute top-4 right-4">
-        {confirmDeleteId === session.id ? (
-          <div className="flex items-center gap-2 bg-card border border-destructive/30 rounded-lg px-3 py-1.5 shadow-md">
-            <span className="text-xs text-destructive">Delete?</span>
-            <button
-              onClick={() => handleDelete(session.id)}
-              disabled={deleting}
-              className="text-xs text-destructive font-semibold hover:opacity-70"
-            >
-              Yes
-            </button>
-            <button
-              onClick={() => setConfirmDeleteId(null)}
-              className="text-xs text-muted-foreground hover:opacity-70"
-            >
-              No
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setConfirmDeleteId(session.id);
-            }}
-            className="p-1.5 rounded-md text-muted-foreground hover:text-destructive transition-colors"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
-        )}
-      </div>
-    )}
-  </div>
-))}
+                {/* Delete button — ended sessions only */}
+                {session.status === "ended" && (
+                  <div className="absolute top-1/2 -translate-y-1/2 right-10">
+                    {confirmDeleteId === session.id ? (
+                      <div className="flex items-center gap-2 bg-card border border-destructive/30 rounded-lg px-3 py-1.5 shadow-md">
+                        <span className="text-xs text-destructive">Delete?</span>
+                        <button
+                          onClick={() => handleDelete(session.id)}
+                          disabled={deleting}
+                          className="text-xs text-destructive font-semibold hover:opacity-70"
+                        >
+                          Yes
+                        </button>
+                        <button
+                          onClick={() => setConfirmDeleteId(null)}
+                          className="text-xs text-muted-foreground hover:opacity-70"
+                        >
+                          No
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={e => {
+                          e.stopPropagation();
+                          setConfirmDeleteId(session.id);
+                        }}
+                        className="p-1.5 rounded-md text-muted-foreground hover:text-destructive transition-colors"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         )}
       </motion.div>
@@ -166,7 +192,7 @@ const [deleting, setDeleting] = useState(false);
   );
 };
 
-// ─── ACTIVE SESSION VIEW ─────────────────────────────────────────────────────
+// ─── SESSION VIEW ─────────────────────────────────────────────────────────────
 
 const SessionView = ({ sessionId }: { sessionId: string }) => {
   const navigate = useNavigate();
@@ -185,27 +211,16 @@ const SessionView = ({ sessionId }: { sessionId: string }) => {
   useEffect(() => {
     loadSession();
 
-    // Realtime — watch guests table for this session
     const channel = supabase
       .channel(`session-${sessionId}`)
       .on(
         "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "guests",
-          filter: `session_id=eq.${sessionId}`,
-        },
+        { event: "*", schema: "public", table: "guests", filter: `session_id=eq.${sessionId}` },
         () => loadSession()
       )
       .on(
         "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "guest_rankings",
-          filter: `session_id=eq.${sessionId}`,
-        },
+        { event: "*", schema: "public", table: "guest_rankings", filter: `session_id=eq.${sessionId}` },
         () => loadSession()
       )
       .subscribe();
@@ -249,7 +264,7 @@ const SessionView = ({ sessionId }: { sessionId: string }) => {
 
       const wb = XLSX.utils.book_new();
 
-      // ── Sheet 1: Guest List ──
+      // Sheet 1: Guest List
       const guestRows = session.guests.map(g => ({
         "First Name": g.firstName,
         "Last Name": g.lastName,
@@ -260,12 +275,11 @@ const SessionView = ({ sessionId }: { sessionId: string }) => {
       }));
       XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(guestRows), "Guest List");
 
-      // ── Sheet 2: Tasting Results ──
+      // Sheet 2: Tasting Results
       const resultRows: any[] = [];
       for (const guest of session.guests) {
         const rankings = allRankings.find(r => r.guestId === guest.id);
         if (!rankings) continue;
-
         const flightGroups: Record<number, { wine: any; rank: number }[]> = {};
         for (const r of rankings.rankings) {
           const wine = session.wines.find(w => w.id === r.wineId);
@@ -273,7 +287,6 @@ const SessionView = ({ sessionId }: { sessionId: string }) => {
           if (!flightGroups[wine.flight]) flightGroups[wine.flight] = [];
           flightGroups[wine.flight].push({ wine, rank: r.rank });
         }
-
         for (const [flight, results] of Object.entries(flightGroups)) {
           results.sort((a, b) => a.rank - b.rank);
           for (const { wine, rank } of results) {
@@ -291,21 +304,18 @@ const SessionView = ({ sessionId }: { sessionId: string }) => {
               "Price": wine.price,
               "International": wine.isInternational ? "Yes" : "No",
               "Guessed International": session.originFormat === "international_mix"
-                ? (guessedIntl ? "Yes" : "No")
-                : "N/A",
+                ? (guessedIntl ? "Yes" : "No") : "N/A",
               "Guess Correct": session.originFormat === "international_mix"
-                ? (guessedIntl === !!wine.isInternational ? "Yes" : "No")
-                : "N/A",
+                ? (guessedIntl === !!wine.isInternational ? "Yes" : "No") : "N/A",
             });
           }
         }
       }
       XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(resultRows), "Tasting Results");
 
-      // ── Sheet 3: Orders ──
+      // Sheet 3: Orders
       const orderRows: any[] = [];
       const wineTotals: Record<string, { name: string; vintage: string; total: number }> = {};
-
       for (const order of allOrders) {
         const guest = order.guests;
         for (const item of order.items) {
@@ -324,21 +334,13 @@ const SessionView = ({ sessionId }: { sessionId: string }) => {
           wineTotals[item.wineId].total += item.quantity;
         }
       }
-
-      // Add summary rows at bottom
       if (orderRows.length > 0) {
         orderRows.push({});
         orderRows.push({ "Guest": "── TOTALS BY WINE ──" });
         for (const wt of Object.values(wineTotals)) {
-          orderRows.push({
-            "Guest": "",
-            "Wine": wt.name,
-            "Vintage": wt.vintage,
-            "Quantity": wt.total,
-          });
+          orderRows.push({ "Guest": "", "Wine": wt.name, "Vintage": wt.vintage, "Quantity": wt.total });
         }
       }
-
       XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(orderRows), "Orders");
 
       XLSX.writeFile(wb, `${session.name} Tasting.xlsx`);
@@ -367,9 +369,12 @@ const SessionView = ({ sessionId }: { sessionId: string }) => {
     );
   }
 
-  const completedCount = session.guests.filter(g => g.status === "completed" || g.status === "ordered").length;
+  const completedCount = session.guests.filter(
+    g => g.status === "completed" || g.status === "ordered"
+  ).length;
   const orderedCount = session.guests.filter(g => g.status === "ordered").length;
-const registrationUrl = `${window.location.origin}/register?session=${session.id}`;
+  const registrationUrl = `${window.location.origin}/register?session=${session.id}`;
+
   return (
     <div className="min-h-screen bg-background px-4 py-8">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-2xl mx-auto">
@@ -399,14 +404,18 @@ const registrationUrl = `${window.location.origin}/register?session=${session.id
               {session.status.charAt(0).toUpperCase() + session.status.slice(1)}
             </span>
           </div>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
             <span className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
-              {new Date(session.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+              {new Date(session.date).toLocaleDateString("en-GB", {
+                day: "numeric", month: "long", year: "numeric",
+              })}
             </span>
             <span>{session.wines.length} wines · {session.flights} flights</span>
             <span className="flex items-center gap-1">
-              {session.tastingType === "blind" ? <><EyeOff className="h-3 w-3" /> Blind</> : <><Eye className="h-3 w-3" /> Open</>}
+              {session.tastingType === "blind"
+                ? <><EyeOff className="h-3 w-3" /> Blind</>
+                : <><Eye className="h-3 w-3" /> Open</>}
             </span>
             <span className="flex items-center gap-1">
               <Mail className="h-3 w-3" /> {session.hostEmail}
@@ -414,10 +423,10 @@ const registrationUrl = `${window.location.origin}/register?session=${session.id
           </div>
         </div>
 
-        {/* Activate button for upcoming sessions */}
+        {/* Activate */}
         {session.status === "upcoming" && (
           <div className="bg-blue-400/10 border border-blue-400/30 rounded-lg p-4 mb-6 flex items-center justify-between">
-            <p className="text-sm text-blue-400">Session is set up and ready. Activate when guests arrive.</p>
+            <p className="text-sm text-blue-400">Session is ready. Activate when guests arrive.</p>
             <Button
               onClick={handleActivate}
               className="bg-blue-400 text-white hover:opacity-90 shrink-0 ml-4"
@@ -427,7 +436,7 @@ const registrationUrl = `${window.location.origin}/register?session=${session.id
           </div>
         )}
 
-        {/* QR Code — show when active */}
+        {/* QR Code */}
         {session.status === "active" && (
           <div className="bg-card border border-border rounded-lg p-6 shadow-md mb-6 text-center">
             <div className="flex items-center justify-center gap-2 mb-4">
@@ -466,18 +475,22 @@ const registrationUrl = `${window.location.origin}/register?session=${session.id
               <span className="ml-auto text-xs text-sage animate-pulse">● Live</span>
             )}
           </div>
-
           {session.guests.length === 0 ? (
             <p className="text-muted-foreground text-sm">No guests have registered yet.</p>
           ) : (
             <div className="space-y-2">
               {session.guests.map(guest => (
-                <div key={guest.id} className="flex items-center justify-between bg-muted/50 rounded-md p-3">
+                <div
+                  key={guest.id}
+                  className="flex items-center justify-between bg-muted/50 rounded-md p-3"
+                >
                   <div>
                     <p className="font-medium">{guest.firstName} {guest.lastName}</p>
                     <p className="text-xs text-muted-foreground">{guest.email}</p>
                   </div>
-                  <span className={`text-xs font-medium ${statusColour[guest.status as GuestStatus] || "text-muted-foreground"}`}>
+                  <span className={`text-xs font-medium ${
+                    statusColour[guest.status as GuestStatus] || "text-muted-foreground"
+                  }`}>
                     {statusLabel[guest.status as GuestStatus] || guest.status}
                   </span>
                 </div>
@@ -516,7 +529,7 @@ const registrationUrl = `${window.location.origin}/register?session=${session.id
               className="bg-destructive/10 border border-destructive/30 rounded-lg p-4"
             >
               <p className="text-sm text-destructive font-medium mb-3">
-                Are you sure? Tasters will no longer have access once the session is ended.
+                Are you sure? Tasters will no longer have access once ended.
               </p>
               <div className="flex gap-3">
                 <Button
