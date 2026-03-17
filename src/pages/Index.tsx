@@ -28,9 +28,10 @@ const Index = () => {
         transition={{ duration: 0.6, delay: 0.1 }}
         className="text-center px-6 mb-12"
       >
-        <h1 className="text-4xl font-bold text-foreground mb-3">
-          Blind & Beyond
+        <b></b><h1 className="text-4xl font-bold text-foreground mb-3">
+          
         </h1>
+      </b>
         <p className="text-muted-foreground text-base max-w-sm mx-auto leading-relaxed">
           A guided wine tasting experience. Taste blind, discover your palate,
           and find your next favourite bottle.
