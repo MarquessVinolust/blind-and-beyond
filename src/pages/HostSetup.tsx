@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { createSession } from "@/lib/tasting-store";
 import { Wine, TastingType, OriginFormat } from "@/types/tasting";
-import logo from "@/assets/wine-cellar-logo.png";
+import logo from "@/assets/BB-Logo.jpg";
 import { Upload, Plus, Trash2, PlayCircle, Download, Globe, Eye, EyeOff } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
@@ -177,7 +177,7 @@ const HostSetup = () => {
         >
           <div className="flex flex-col items-center mb-10">
             <button onClick={() => navigate("/")} className="mb-6">
-              <img src={logo} alt="Wine Cellar" className="h-14" />
+              <img src={logo} alt="Brice & Burnett" className="h-10" />
             </button>
             <h1 className="text-3xl font-bold text-foreground">Set Up Your Tasting</h1>
             <p className="text-muted-foreground text-center mt-1">Choose how your guests will experience the wines</p>
@@ -293,7 +293,7 @@ const HostSetup = () => {
       >
         <div className="flex flex-col items-center mb-8">
           <button onClick={() => navigate("/")} className="mb-4">
-            <img src={logo} alt="Wine Cellar" className="h-12" />
+            <img src={logo} alt="Brice & Burnett" className="h-10" />
           </button>
           <h1 className="text-3xl font-bold text-foreground">Host Setup</h1>
           <div className="flex items-center gap-2 mt-1">
