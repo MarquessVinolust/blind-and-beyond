@@ -145,6 +145,7 @@ const SessionList = () => {
     </div>
   </div>
   <div className="flex items-center gap-2 shrink-0">
+     <ChevronRight className="h-5 w-5 text-muted-foreground" />
     {session.status === "ended" && (
       confirmDeleteId === session.id ? (
         <div className="flex items-center gap-2 bg-card border border-destructive/30 rounded-lg px-3 py-1.5 shadow-md">
