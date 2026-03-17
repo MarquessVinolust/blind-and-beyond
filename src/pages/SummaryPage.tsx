@@ -375,7 +375,7 @@ const SummaryPage = () => {
           </div>
         </div>
 
-        {/* Results by flight — with price */}
+       {/* Results by flight — with price */}
         {Object.entries(flightResults).map(([flight, results]) => {
           const flightNum = parseInt(flight);
           const flightGuesses = guesses[flightNum] || [];
@@ -406,3 +406,48 @@ const SummaryPage = () => {
                           {wine.country && ` · ${wine.country}`}
                         </span>
                       </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {isBlind && isInternationalMix && wine.isInternational && (
+                          <Globe className="h-3.5 w-3.5 text-gold" />
+                        )}
+                        {isBlind && isInternationalMix && (
+                          guessedIntl ? (
+                            wine.isInternational
+                              ? <CheckCircle2 className="h-3.5 w-3.5 text-sage" />
+                              : <XCircle className="h-3.5 w-3.5 text-destructive" />
+                          ) : wine.isInternational
+                            ? <XCircle className="h-3.5 w-3.5 text-destructive" />
+                            : null
+                        )}
+                        <span className="text-muted-foreground text-xs">{wine.price}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Actions */}
+        <div className="space-y-3 mt-6">
+          <Button
+            onClick={() => navigate(`/order/${guestId}?session=${sessionId}`)}
+            className="w-full bg-gold text-gold-foreground hover:opacity-90 text-base py-5"
+          >
+            <ShoppingCart className="h-4 w-4 mr-2" /> Order Now
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleDownloadPDF}
+            className="w-full border-gold text-gold hover:bg-gold/10 text-base py-5"
+          >
+            <Download className="h-4 w-4 mr-2" /> Download My Results
+          </Button>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+export default SummaryPage;
