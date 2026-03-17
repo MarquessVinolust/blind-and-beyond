@@ -159,7 +159,6 @@ const [deleting, setDeleting] = useState(false);
     )}
   </div>
 ))}
-            ))}
           </div>
         )}
       </motion.div>
