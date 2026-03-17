@@ -319,8 +319,7 @@ const SessionView = ({ sessionId }: { sessionId: string }) => {
 
   const completedCount = session.guests.filter(g => g.status === "completed" || g.status === "ordered").length;
   const orderedCount = session.guests.filter(g => g.status === "ordered").length;
-  const registrationUrl = `${window.location.origin}/?session=${session.id}`;
-
+const registrationUrl = `${window.location.origin}/register?session=${session.id}`;
   return (
     <div className="min-h-screen bg-background px-4 py-8">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-2xl mx-auto">
