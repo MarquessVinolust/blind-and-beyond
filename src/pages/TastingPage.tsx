@@ -159,21 +159,31 @@ const TastingPage = () => {
     setRevealedFlights([...revealedFlights, currentFlight]);
   };
 
-  const goToConfirm = () => {
-    // Check all flights have been ranked
-    const allFlightsRanked = Array.from({ length: totalFlights }, (_, i) => i + 1).every(f => {
-      const flightW = session.wines.filter(w => w.flight === f);
-      const flightR = rankings[f] || {};
-      return Object.keys(flightR).length === flightW.length;
-    });
+  const goToConfirm = async () => {
+  // Check all flights have been ranked
+  const allFlightsRanked = Array.from({ length: totalFlights }, (_, i) => i + 1).every(f => {
+    const flightW = session.wines.filter(w => w.flight === f);
+    const flightR = rankings[f] || {};
+    return Object.keys(flightR).length === flightW.length;
+  });
 
-    if (!allFlightsRanked) {
-      toast.error("Please complete all flights before confirming.");
-      return;
-    }
+  if (!allFlightsRanked) {
+    toast.error("Please complete all flights before confirming.");
+    return;
+  }
 
+  try {
+    // Save rankings to Supabase before navigating
+    const allRankingsList = Object.entries(rankings).flatMap(([, flightRanks]) =>
+      Object.entries(flightRanks).map(([wineId, rank]) => ({ wineId, rank: rank as number }))
+    );
+    await saveGuestRankings(guestId, sessionId, allRankingsList, guesses);
     navigate(`/summary/${guestId}?session=${sessionId}&confirm=true`);
-  };
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to save results. Please try again.");
+  }
+};
 
   return (
     <div className="min-h-screen bg-background px-4 py-6">
