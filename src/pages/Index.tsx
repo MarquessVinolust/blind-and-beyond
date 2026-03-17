@@ -28,7 +28,7 @@ const Index = () => {
         transition={{ duration: 0.6, delay: 0.1 }}
         className="text-center px-6 mb-12"
       >
-        <b></b><h1 className="text-4xl font-bold text-foreground mb-3">
+        <b><h1 className="text-4xl font-bold text-foreground mb-3">
           
         </h1>
       </b>
