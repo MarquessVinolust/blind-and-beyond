@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getSession, getGuestRankings, saveOrder } from "@/lib/tasting-store";
 import { TastingSession, GuestRankings, OrderItem } from "@/types/tasting";
-import logo from "@/assets/wine-cellar-logo.png";
+import logo from "@/assets/BB-Logo.jpg";
 import { Star, Minus, Plus, ArrowLeft, ShoppingCart, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
@@ -199,7 +199,7 @@ if (fnError) throw fnError;
           className="text-center max-w-sm"
         >
           <button onClick={() => navigate("/")}>
-            <img src={logo} alt="Wine Cellar" className="h-12 mx-auto mb-6" />
+            <img src={logo} alt="Brice & Burnett" className="h-5 mx-auto mb-6" />
           </button>
           <div className="w-16 h-16 rounded-full bg-sage/20 flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="h-8 w-8 text-sage" />
@@ -230,7 +230,7 @@ if (fnError) throw fnError;
         >
           <div className="flex items-center justify-between mb-6">
             <button onClick={() => navigate("/")}>
-              <img src={logo} alt="Wine Cellar" className="h-10" />
+              <img src={logo} alt="Brice & Burnett" className="h-5" />
             </button>
             <Button
               variant="ghost"
@@ -330,7 +330,7 @@ if (fnError) throw fnError;
       >
         <div className="flex items-center justify-between mb-6">
           <button onClick={() => navigate("/")}>
-            <img src={logo} alt="Wine Cellar" className="h-10" />
+            <img src={logo} alt="Brice & Burnett" className="h-5" />
           </button>
           <Button
             variant="ghost"
