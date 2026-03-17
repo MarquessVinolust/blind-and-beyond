@@ -180,39 +180,7 @@ const SessionList = () => {
 </div>
                 </button>
 
-                {/* Delete button — ended sessions only */}
-                {session.status === "ended" && (
-                  <div className="absolute top-1/2 -translate-y-1/2 right-8">
-                    {confirmDeleteId === session.id ? (
-                      <div className="flex items-center gap-2 bg-card border border-destructive/30 rounded-lg px-3 py-1.5 shadow-md">
-                        <span className="text-xs text-destructive">Delete?</span>
-                        <button
-                          onClick={() => handleDelete(session.id)}
-                          disabled={deleting}
-                          className="text-xs text-destructive font-semibold hover:opacity-70"
-                        >
-                          Yes
-                        </button>
-                        <button
-                          onClick={() => setConfirmDeleteId(null)}
-                          className="text-xs text-muted-foreground hover:opacity-70"
-                        >
-                          No
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={e => {
-                          e.stopPropagation();
-                          setConfirmDeleteId(session.id);
-                        }}
-                        className="p-1.5 rounded-md text-muted-foreground hover:text-destructive transition-colors"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                )}
+                
               </div>
             ))}
           </div>
