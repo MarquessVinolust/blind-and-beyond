@@ -165,19 +165,19 @@ ${orderLines}
 Total: ${total}
       `.trim();
 
-      // Email to host
-      const hostSubject = encodeURIComponent(`Wine Order — ${session.name} — ${formName}`);
-      const hostBody = encodeURIComponent(emailBody);
-      window.open(`mailto:${session.hostEmail}?subject=${hostSubject}&body=${hostBody}`);
+      // Send via Supabase Edge Function
+const { error: fnError } = await supabase.functions.invoke("send-order-email", {
+  body: {
+    hostEmail: session.hostEmail,
+    guestEmail: formEmail,
+    guestName: formName,
+    sessionName: session.name,
+    orderLines: items,
+    total,
+  },
+});
 
-      // Email copy to guest
-      const guestSubject = encodeURIComponent(`Your Wine Order — ${session.name}`);
-      const guestBody = encodeURIComponent(
-        `Hi ${formName},\n\nHere is a copy of your order:\n\n${emailBody}\n\nWe'll be in touch shortly!\n\nCheers`
-      );
-      setTimeout(() => {
-        window.open(`mailto:${formEmail}?subject=${guestSubject}&body=${guestBody}`);
-      }, 500);
+if (fnError) throw fnError;
 
       setSubmitted(true);
     } catch (err) {
