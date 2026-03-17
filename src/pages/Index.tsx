@@ -1,6 +1,6 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import logo from "@/assets/wine-cellar-logo.png";
+import logo from "@/assets/BB-Logo.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ const Index = () => {
       <div className="flex justify-center pt-10 pb-6">
         <motion.img
           src={logo}
-          alt="Wine Cellar"
+          alt="Brice & Burnett"
           className="h-16"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
