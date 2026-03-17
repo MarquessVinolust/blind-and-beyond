@@ -8,7 +8,7 @@ import {
   saveGuestRankings,
 } from "@/lib/tasting-store";
 import { TastingSession, GuestRankings } from "@/types/tasting";
-import logo from "@/assets/wine-cellar-logo.png";
+import logo from "@/assets/BB-Logo.jpg";
 import {
   Trophy,
   Star,
@@ -222,7 +222,7 @@ const SummaryPage = () => {
       >
         <div className="flex flex-col items-center mb-8">
           <button onClick={() => navigate("/")}>
-            <img src={logo} alt="Wine Cellar" className="h-10 mb-4" />
+            <img src={logo} alt="Brice & Burnett" className="h-5 mb-4" />
           </button>
           <h1 className="text-3xl font-bold text-foreground">Your Results</h1>
           {guest && (
