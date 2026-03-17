@@ -90,7 +90,7 @@ const SessionList = () => {
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <button onClick={() => navigate("/")}>
-            <img src={logo} alt="Brice & Burnett" className="h-10" />
+            <img src={logo} alt="Brice & Burnett" className="h-5" />
           </button>
           <Button
             onClick={() => navigate("/host/setup")}
@@ -382,7 +382,7 @@ const SessionView = ({ sessionId }: { sessionId: string }) => {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <button onClick={() => navigate("/host")}>
-            <img src={logo} alt="Brice & Burnett" className="h-10" />
+            <img src={logo} alt="Brice & Burnett" className="h-5" />
           </button>
           <button
             onClick={() => navigate("/host")}
