@@ -11,6 +11,8 @@ import TastingPage from "./pages/TastingPage";
 import SummaryPage from "./pages/SummaryPage";
 import OrderPage from "./pages/OrderPage";
 import NotFound from "./pages/NotFound";
+import TasterIntro from "./pages/TasterIntro";
+import ScanPrompt from "./pages/ScanPrompt";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +31,8 @@ const App = () => (
           <Route path="/tasting/:guestId" element={<TastingPage />} />
           <Route path="/summary/:guestId" element={<SummaryPage />} />
           <Route path="/order/:guestId" element={<OrderPage />} />
+          <Route path="/taster" element={<TasterIntro />} />
+          <Route path="/scan" element={<ScanPrompt />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
