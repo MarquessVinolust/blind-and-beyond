@@ -48,10 +48,10 @@ const Index = () => {
         {/* Taster */}
         <button
           onClick={() =>
-            sessionId
-              ? navigate(`/register?session=${sessionId}`)
-              : navigate("/register")
-          }
+  sessionId
+    ? navigate(`/taster?session=${sessionId}`)
+    : navigate("/taster")
+}
           className="flex-1 bg-card border-2 border-border hover:border-gold rounded-xl p-8 text-left transition-all hover:shadow-lg group"
         >
           <div className="flex flex-col items-center text-center gap-4">
