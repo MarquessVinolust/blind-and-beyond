@@ -380,21 +380,22 @@ const SessionView = ({ sessionId }: { sessionId: string }) => {
 
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <button onClick={() => navigate("/host")}>
-            <img src={logo} alt="Brice & Burnett" className="h-5" />
-          </button>
-          <button
-            onClick={() => navigate("/host")}
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            ← All Sessions
-          </button>
-        </div>
+  <button
+    onClick={() => navigate("/host")}
+    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+  >
+    ← All Sessions
+  </button>
+  <button onClick={() => navigate("/host")}>
+    <img src={logo} alt="Brice & Burnett" className="h-5" />
+  </button>
+  <div className="w-24" />
+</div>
 
         {/* Session Title */}
         <div className="mb-6">
-          <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-2xl font-bold">{session.name}</h1>
+          <div className="flex items-center gap-3 mb-2">
+  <h1 className="text-2xl font-bold">{session.name}</h1>
             <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
               session.status === "active" ? "bg-sage/20 text-sage" :
               session.status === "upcoming" ? "bg-blue-400/10 text-blue-400" :
@@ -403,7 +404,7 @@ const SessionView = ({ sessionId }: { sessionId: string }) => {
               {session.status.charAt(0).toUpperCase() + session.status.slice(1)}
             </span>
           </div>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
+          <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1 flex-wrap">
             <span className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               {new Date(session.date).toLocaleDateString("en-GB", {
