@@ -106,9 +106,11 @@ const ScanPrompt = () => {
           animate={{ opacity: 1, y: 0 }}
           className="max-w-sm w-full"
         >
-          <button onClick={() => navigate("/")}>
-            <img src={logo} alt="Brice & Burnett" className="h-5 mx-auto mb-10" />
-          </button>
+          <div className="flex justify-center mb-10">
+  <button onClick={() => navigate("/")}>
+    <img src={logo} alt="Brice & Burnett" className="h-5" />
+  </button>
+</div>
 
           <h1 className="text-2xl font-bold text-foreground mb-2 text-center">
             Join the Tasting
@@ -167,7 +169,7 @@ const ScanPrompt = () => {
   // ── SCAN SCREEN ──────────────────────────────────────────────────────────────
   if (mode === "scan") {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
+      <div className="min-h-screen bg-background flex flex-col items-center px-6 py-10">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
