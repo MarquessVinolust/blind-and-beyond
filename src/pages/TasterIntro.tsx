@@ -156,7 +156,7 @@ const TasterIntro = () => {
             <ChevronRight className="h-5 w-5 ml-2" />
           </Button>
           <p className="text-center text-xs text-muted-foreground mt-4 italic">
-            A guided tasting experience by Brice & Burnett
+            Powered by Vinolust
           </p>
         </motion.div>
       </motion.div>
