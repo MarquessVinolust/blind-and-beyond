@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import logo from "@/assets/wine-cellar-logo.png";
+import logo from "@/assets/BB-Logo.jpg";
 import { Wine, User, Globe, Heart, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getSession } from "@/lib/tasting-store";
@@ -97,7 +97,7 @@ const TasterIntro = () => {
       >
         <div className="flex justify-center mb-8">
           <button onClick={() => navigate("/")}>
-            <img src={logo} alt="Wine Cellar" className="h-14" />
+            <img src={logo} alt="Brice & Burnett" className="h-5" />
           </button>
         </div>
 
