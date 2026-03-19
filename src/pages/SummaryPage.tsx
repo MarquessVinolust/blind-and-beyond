@@ -340,20 +340,27 @@ const SummaryPage = () => {
 
         {/* Actions */}
         <div className="space-y-3 mt-6">
-          <Button
-            onClick={() => navigate(`/order/${guestId}?session=${sessionId}`)}
-            className="w-full bg-gold text-gold-foreground hover:opacity-90 text-base py-5"
-          >
-            <ShoppingCart className="h-4 w-4 mr-2" /> Order Now
-          </Button>
-          <Button
-            variant="outline"
-            onClick={handleDownloadPDF}
-            className="w-full border-gold text-gold hover:bg-gold/10 text-base py-5"
-          >
-            <Download className="h-4 w-4 mr-2" /> Download My Results
-          </Button>
-        </div>
+  <Button
+    onClick={() => navigate(`/order/${guestId}?session=${sessionId}`)}
+    className="w-full bg-gold text-gold-foreground hover:opacity-90 text-base py-5"
+  >
+    <ShoppingCart className="h-4 w-4 mr-2" /> Order Now
+  </Button>
+  <Button
+    variant="outline"
+    onClick={handleDownloadPDF}
+    className="w-full border-gold text-gold hover:bg-gold/10 text-base py-5"
+  >
+    <Download className="h-4 w-4 mr-2" /> Download My Results
+  </Button>
+  <Button
+    variant="ghost"
+    onClick={() => navigate(`/done?session=${sessionId}`)}
+    className="w-full text-muted-foreground hover:text-foreground text-base py-5"
+  >
+    Consider me wined!
+  </Button>
+</div>
       </motion.div>
     </div>
   );
