@@ -339,33 +339,34 @@ const SummaryPage = () => {
           );
         })}
 
-        {/* Actions */}
+       {/* Actions */}
         <div className="space-y-3 mt-6">
-  <Button
-    onClick={() => navigate(`/order/${guestId}?session=${sessionId}`)}
-    className="w-full bg-gold text-gold-foreground hover:opacity-90 text-base py-5"
-  >
-    <ShoppingCart className="h-4 w-4 mr-2" /> Order Now
-  </Button>
-  <div className="grid grid-cols-2 gap-3">
-    <Button
-      variant="outline"
-      onClick={handleDownloadPDF}
-      className="w-full border-gold text-gold hover:bg-gold/10 text-base py-5"
-    >
-      <Download className="h-4 w-4 mr-2" /> Download
-    </Button>
-    <Button
-      variant="outline"
-      onClick={() => navigate(`/done?session=${sessionId}`)}
-      className="w-full border-gold text-gold hover:bg-gold/10 text-base py-5"
-    >
-      <Wine className="h-4 w-4 mr-2" /> Consider me wined!
-    </Button>
-  </div>
+          <Button
+            onClick={() => navigate(`/order/${guestId}?session=${sessionId}`)}
+            className="w-full bg-gold text-gold-foreground hover:opacity-90 text-base py-5"
+          >
+            <ShoppingCart className="h-4 w-4 mr-2" /> Order Now
+          </Button>
+          <div className="grid grid-cols-2 gap-3">
+            <Button
+              variant="outline"
+              onClick={handleDownloadPDF}
+              className="w-full border-gold text-gold hover:bg-gold/10 text-base py-5"
+            >
+              <Download className="h-4 w-4 mr-2" /> Download
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => navigate(`/done?session=${sessionId}`)}
+              className="w-full border-gold text-gold hover:bg-gold/10 text-base py-5"
+            >
+              <Wine className="h-4 w-4 mr-2" /> Consider me wined!
+            </Button>
+          </div>
+        </div>
       </motion.div>
     </div>
   );
 };
 
-export default SummaryPage; 
+export default SummaryPage;
