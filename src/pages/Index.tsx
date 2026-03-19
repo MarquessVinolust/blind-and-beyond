@@ -33,7 +33,7 @@ const Index = () => {
         </h1>
       </b>
         <p className="text-muted-foreground text-base max-w-sm mx-auto leading-relaxed">
-          A guided wine tasting experience. Taste blind, discover your palate,
+          A guided wine tasting experience. Taste, discover your palate,
           and find your next favourite bottle.
         </p>
       </motion.div>
