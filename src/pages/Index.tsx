@@ -95,7 +95,7 @@ const Index = () => {
         transition={{ delay: 0.5 }}
         className="text-center text-xs text-muted-foreground mt-auto pb-8 pt-12"
       >
-        Powered by Blind & Beyond
+        Powered by Vinolust
       </motion.p>
     </div>
   );
