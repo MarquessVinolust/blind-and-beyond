@@ -96,7 +96,29 @@ export async function getSession(sessionId: string): Promise<TastingSession | nu
 
   return mapSession(session, mapWines(wines ?? []), mapGuests(guests ?? []))
 }
+export async function getSessionByCode(code: string): Promise<TastingSession | null> {
+  const { data: session, error } = await supabase
+    .from('sessions')
+    .select('*')
+    .eq('code', code.toUpperCase().trim())
+    .single()
 
+  if (error || !session) return null
+
+  const { data: wines } = await supabase
+    .from('wines')
+    .select('*')
+    .eq('session_id', session.id)
+    .order('position')
+
+  const { data: guests } = await supabase
+    .from('guests')
+    .select('*')
+    .eq('session_id', session.id)
+    .order('created_at')
+
+  return mapSession(session, mapWines(wines ?? []), mapGuests(guests ?? []))
+}
 export async function getAllSessions(): Promise<TastingSession[]> {
   const { data: sessions, error } = await supabase
     .from('sessions')
@@ -327,6 +349,7 @@ function mapSession(row: any, wines: Wine[] = [], guests: Guest[] = []): Tasting
     flights: row.flights,
     winesPerFlight: row.wines_per_flight,
     status: row.status,
+    code: row.code,
     wines,
     guests,
   }
