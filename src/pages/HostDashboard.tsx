@@ -447,6 +447,12 @@ const SessionView = ({ sessionId }: { sessionId: string }) => {
               <QRCodeSVG value={registrationUrl} size={200} level="M" fgColor="#333333" />
             </div>
             <p className="text-xs text-muted-foreground mt-3 break-all">{registrationUrl}</p>
+{session.code && (
+  <div className="mt-4 inline-block bg-muted rounded-lg px-6 py-3">
+    <p className="text-xs text-muted-foreground mb-1">Tasting Code</p>
+    <p className="text-3xl font-bold tracking-widest text-gold">{session.code}</p>
+  </div>
+)}
           </div>
         )}
 
