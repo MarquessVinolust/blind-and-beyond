@@ -100,7 +100,7 @@ const ScanPrompt = () => {
   // ── CHOICE SCREEN ────────────────────────────────────────────────────────────
   if (mode === "choice") {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
+      <div className="min-h-screen bg-background flex flex-col items-center px-6 py-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -224,7 +224,7 @@ const ScanPrompt = () => {
 
   // ── CODE ENTRY SCREEN ────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
+    <div className="min-h-screen bg-background flex flex-col items-center px-6 py-10">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
