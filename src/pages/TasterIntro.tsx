@@ -58,6 +58,7 @@ const TasterIntro = () => {
   const steps = session
     ? [
         {
-          icon: Wine,
-          title: `${session.flights} Guided Round${session.flights !== 1 ? "s" : ""}`,
-          description: `
+  icon: Wine,
+  title: `${session.flights} Guided Round${session.flights !== 1 ? "s" : ""}`,
+  description: `In each round, you'll taste ${session.winesPerFlight} wine${session.winesPerFlight !== 1 ? "s" : ""} and rank them in order of preference.`,
+},
