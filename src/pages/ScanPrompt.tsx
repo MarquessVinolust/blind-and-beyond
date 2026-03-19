@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Html5Qrcode } from "html5-qrcode";
 import { getSessionByCode } from "@/lib/tasting-store";
-import logo from "@/assets/wine-cellar-logo.png";
+import logo from "@/assets/BB-Logo.jpg";
 import { QrCode, KeyRound, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -107,7 +107,7 @@ const ScanPrompt = () => {
           className="max-w-sm w-full"
         >
           <button onClick={() => navigate("/")}>
-            <img src={logo} alt="Wine Cellar" className="h-14 mx-auto mb-10" />
+            <img src={logo} alt="Brice & Burnett" className="h-5 mx-auto mb-10" />
           </button>
 
           <h1 className="text-2xl font-bold text-foreground mb-2 text-center">
@@ -174,7 +174,7 @@ const ScanPrompt = () => {
           className="max-w-sm w-full"
         >
           <button onClick={() => navigate("/")}>
-            <img src={logo} alt="Wine Cellar" className="h-12 mx-auto mb-6" />
+            <img src={logo} alt="Brice & Burnett" className="h-5 mx-auto mb-6" />
           </button>
 
           <h1 className="text-xl font-bold text-foreground mb-2 text-center">
@@ -229,7 +229,7 @@ const ScanPrompt = () => {
         className="max-w-sm w-full"
       >
         <button onClick={() => navigate("/")}>
-          <img src={logo} alt="Wine Cellar" className="h-12 mx-auto mb-6" />
+          <img src={logo} alt="Brice & Burnett" className="h-5 mx-auto mb-6" />
         </button>
 
         <h1 className="text-xl font-bold text-foreground mb-2 text-center">
