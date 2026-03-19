@@ -34,6 +34,7 @@ export interface TastingSession {
   flights: number
   winesPerFlight: number
   status: SessionStatus
+  code?: string
   wines: Wine[]
   guests: Guest[]
 }
