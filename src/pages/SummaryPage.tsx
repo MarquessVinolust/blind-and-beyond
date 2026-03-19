@@ -347,24 +347,22 @@ const SummaryPage = () => {
   >
     <ShoppingCart className="h-4 w-4 mr-2" /> Order Now
   </Button>
-  <Button
-    variant="outline"
-    onClick={handleDownloadPDF}
-    className="w-full border-gold text-gold hover:bg-gold/10 text-base py-5"
-  >
-    <Download className="h-4 w-4 mr-2" /> Download My Results
-  </Button>
-  <Button
-    variant="ghost"
-    onClick={() => navigate(`/done?session=${sessionId}`)}
-    className="w-full text-muted-foreground hover:text-foreground text-base py-5"
-  >
-    Consider me wined!
-  </Button>
+  <div className="grid grid-cols-2 gap-3">
+    <Button
+      variant="outline"
+      onClick={handleDownloadPDF}
+      className="w-full border-gold text-gold hover:bg-gold/10 text-base py-5"
+    >
+      <Download className="h-4 w-4 mr-2" /> Download
+    </Button>
+    <Button
+      variant="outline"
+      onClick={() => navigate(`/done?session=${sessionId}`)}
+      className="w-full border-gold text-gold hover:bg-gold/10 text-base py-5"
+    >
+      <Wine className="h-4 w-4 mr-2" /> Consider me wined!
+    </Button>
+  </div>
 </div>
-      </motion.div>
-    </div>
-  );
-};
 
 export default SummaryPage;
