@@ -3,6 +3,15 @@ import { Wine, Guest, GuestRankings, TastingSession, GuestProgress, TastingType,
 
 // ─── SESSION ────────────────────────────────────────────────────────────────
 
+function generateTastingCode(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
 export async function createSession(
   name: string,
   date: string,
@@ -13,6 +22,21 @@ export async function createSession(
   tastingType: TastingType,
   originFormat: OriginFormat
 ): Promise<TastingSession> {
+  // Generate unique code, retry if collision
+  let code = '';
+  let attempts = 0;
+  while (attempts < 10) {
+    const candidate = generateTastingCode();
+    const { data } = await supabase
+      .from('sessions')
+      .select('id')
+      .eq('code', candidate)
+      .single();
+    if (!data) { code = candidate; break; }
+    attempts++;
+  }
+  if (!code) throw new Error('Failed to generate unique tasting code');
+
   const { data: session, error: sessionError } = await supabase
     .from('sessions')
     .insert({
@@ -24,6 +48,7 @@ export async function createSession(
       flights,
       wines_per_flight: winesPerFlight,
       status: 'upcoming',
+      code,
     })
     .select()
     .single()
