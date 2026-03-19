@@ -363,6 +363,9 @@ const SummaryPage = () => {
       <Wine className="h-4 w-4 mr-2" /> Consider me wined!
     </Button>
   </div>
-</div>
+      </motion.div>
+    </div>
+  );
+};
 
-export default SummaryPage;
+export default SummaryPage; 
