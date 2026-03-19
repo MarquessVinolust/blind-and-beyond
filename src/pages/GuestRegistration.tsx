@@ -214,7 +214,7 @@ const GuestRegistration = () => {
               className="mt-0.5"
             />
             <Label htmlFor="consent" className="text-sm text-muted-foreground leading-snug cursor-pointer">
-              I'd like to receive updates about wines, events, and offers from this wine house
+              I agree to receive marketing communications about wines, events, and offers from Brice & Burnett. I understand I can unsubscribe at any time.
             </Label>
           </div>
 
