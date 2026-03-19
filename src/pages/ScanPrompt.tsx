@@ -175,9 +175,11 @@ const ScanPrompt = () => {
           animate={{ opacity: 1 }}
           className="max-w-sm w-full"
         >
-          <button onClick={() => navigate("/")}>
-            <img src={logo} alt="Brice & Burnett" className="h-5 mx-auto mb-6" />
-          </button>
+          <div className="flex justify-center mb-6">
+  <button onClick={() => navigate("/")}>
+    <img src={logo} alt="Brice & Burnett" className="h-5" />
+  </button>
+</div>
 
           <h1 className="text-xl font-bold text-foreground mb-2 text-center">
             Scan QR Code
@@ -230,9 +232,11 @@ const ScanPrompt = () => {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-sm w-full"
       >
-        <button onClick={() => navigate("/")}>
-          <img src={logo} alt="Brice & Burnett" className="h-5 mx-auto mb-6" />
-        </button>
+        <div className="flex justify-center mb-6">
+  <button onClick={() => navigate("/")}>
+    <img src={logo} alt="Brice & Burnett" className="h-5" />
+  </button>
+</div>
 
         <h1 className="text-xl font-bold text-foreground mb-2 text-center">
           Enter Tasting Code
