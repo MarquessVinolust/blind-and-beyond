@@ -13,6 +13,7 @@ import OrderPage from "./pages/OrderPage";
 import NotFound from "./pages/NotFound";
 import TasterIntro from "./pages/TasterIntro";
 import ScanPrompt from "./pages/ScanPrompt";
+import Done from "./pages/Done";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/taster" element={<TasterIntro />} />
           <Route path="/scan" element={<ScanPrompt />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/done" element={<Done />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
