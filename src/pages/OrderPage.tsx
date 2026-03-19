@@ -208,9 +208,7 @@ if (fnError) throw fnError;
           <p className="text-muted-foreground text-sm mb-2">
             Your order has been sent to the wine house.
           </p>
-          <p className="text-muted-foreground text-sm">
-            A copy has been sent to <span className="text-foreground font-medium">{formEmail}</span>.
-          </p>
+          
           <p className="text-muted-foreground text-sm mt-4">
             We'll be in touch shortly. Cheers! 🍷
           </p>
